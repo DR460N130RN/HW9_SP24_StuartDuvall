@@ -2,7 +2,8 @@ import math
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtGui as qtg
-
+from PyQt5 import QPen, QColor, QBrush
+from PyQt5 import Qt
 
 class Position():
     """
@@ -244,7 +245,30 @@ class TrussController():
         Reading Links:
         The links should come after the nodes.  Each link has a name and two node names.  See method addLink
         """
-        # $JES MISSING CODE HERE$
+        nodes_started = False
+        for line in data:
+            line = line.strip()
+            if line.startswith("Nodes:"):
+                nodes_started = True
+                continue
+            elif line.startswith("Links:"):
+                break
+
+            if nodes_started:
+                node_data = line.split(",")
+                node_name = node_data[0].strip()
+                pos_x = float(node_data[1].strip())
+                pos_y = float(node_data[2].strip())
+                self.truss.add_node(node_name, pos_x, pos_y)
+
+        for line in data:
+            line = line.strip()
+            if line.startswith("Links:"):
+                link_data = line.split(",")
+                link_name = link_data[0].strip()
+                node1_name = link_data[1].strip()
+                node2_name = link_data[2].strip()
+                self.truss.add_link(link_name, node1_name, node2_name)
 
         self.calcLinkVals()
         self.displayReport()
@@ -390,21 +414,46 @@ class TrussView():
         :param Brush: brush for background
         :return: nothing
         """
-        # JES MISSING CODE HERE$
-        pass
+        pen = QPen(Qt.lightGray)
+        for x in range(-Width // 2, Width // 2, DeltaX):
+            self.scene.addLine(x + CenterX, -Height // 2, x + CenterX, Height // 2, pen)
+        for y in range(-Height // 2, Height // 2, DeltaY):
+            self.scene.addLine(-Width // 2, y + CenterY, Width // 2, y + CenterY, pen)
+
+    pass
 
     def drawLinks(self, truss=None):
-        # $JES MISSING CODE HERE$
+        if truss is None:
+            return
+        for link in truss.links:
+            node1 = truss.get_node(link.node1_name)
+            node2 = truss.get_node(link.node2_name)
+            self.scene.addLine(node1.x, node1.y, node2.x, node2.y, QPen(Qt.black))
+
         pass
 
     def drawNodes(self, truss=None, scene=None):
-        # $JES MISSING CODE HERE$
+        if truss is None:
+            return
+        for node in truss.nodes:
+            self.scene.addEllipse(node.x - 5, node.y - 5, 10, 10, QPen(Qt.black), QBrush(Qt.red))
         pass
 
     def drawALabel(self, x, y, str='', pen=None, brush=None, tip=None):
-        # $JES MISSING CODE HERE$
-        pass
+        label = self.scene.addText(text)
+        label.setPos(x, y)
+        if pen:
+            label.setDefaultTextColor(pen.color())
+        if brush:
+            label.setBackground(brush)
+        if tip:
+            label.setToolTip(tip)
+            pass
 
     def drawACircle(self, centerX, centerY, Radius, angle=0, brush=None, pen=None, name=None, tooltip=None):
-        # $JES MISSING CODE HERE
+        circle = self.scene.addEllipse(centerX - Radius, centerY - Radius, 2 * Radius, 2 * Radius, pen, brush)
+        if name:
+            circle.setData(0, name)
+        if tooltip:
+            circle.setToolTip(tooltip)
         pass
