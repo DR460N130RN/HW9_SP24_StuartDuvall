@@ -5,15 +5,16 @@ from PyQt5 import QtGui as qtg
 from Truss_stem import TrussController
 import sys
 
-class MainWindow(Ui_TrussStructuralDesign,qtw.QWidget):
+
+class MainWindow(Ui_TrussStructuralDesign, qtw.QWidget):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
         self.btn_Open.clicked.connect(self.OpenFile)
-        self.spnd_Zoom.valueChanged.connect(self.setZoom) #$NEW$ double spinner widget for setting zoom level
+        self.spnd_Zoom.valueChanged.connect(self.setZoom)  # $NEW$ double spinner widget for setting zoom level
 
-        self.controller=TrussController()
+        self.controller = TrussController()
         self.controller.setDisplayWidgets((self.te_DesignReport, self.le_LinkName, self.le_Node1Name,
                                            self.le_Node2Name, self.le_LinkLength, self.gv_Main))
 
@@ -59,10 +60,12 @@ class MainWindow(Ui_TrussStructuralDesign,qtw.QWidget):
         data = file.readlines()  # read all the lines of the file into a list of strings
         self.controller.ImportFromFile(data)  # import the pipe network information
 
+
 def Main():
-    app=qtw.QApplication(sys.argv)
-    mw=MainWindow()
+    app = qtw.QApplication(sys.argv)
+    mw = MainWindow()
     sys.exit(app.exec())
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     Main()
